@@ -30,7 +30,8 @@ import {
   IconUserX,
   IconX,
   IconLayoutKanban,
-  IconBrandGithub
+  IconBrandGithub,
+  IconLockBitcoin
 } from '@tabler/icons-react';
 import { Bot, Briefcase, Clock, File, Gauge, Merge, Scroll, User, Users, Workflow } from 'lucide-react';
 
@@ -77,4 +78,5 @@ export const Icons = {
   users: Users,
   gauge: Gauge,
   scroll: Scroll,
+  permission: IconLockBitcoin,
 };

@@ -28,29 +28,43 @@ export const navItems: NavItem[] = [
     isActive: false,
     items: [
       {
+        title: 'Customers Management',
+        url: '/dashboard/customers-management',
+        icon: 'users',
+        shortcut: ['m', 'm']
+      },
+      {
         title: 'Users Management',
         url: '/dashboard/users-management',
         icon: 'users',
         shortcut: ['m', 'm']
       },
-      {
-        title: 'Products Management',
-        url: '/dashboard/product-management',
-        icon: 'file',
-        shortcut: ['m', 'm']
-      },
+      // {
+      //   title: 'Products Management',
+      //   url: '/dashboard/product-management',
+      //   icon: 'file',
+      //   shortcut: ['m', 'm']
+      // },
       {
         title: 'Invard Material Management',
         url: '/dashboard/invard-material-management',
         icon: 'file',
         shortcut: ['m', 'm']
       },
-      {
-        title: 'Material Management',
-        url: '/dashboard/material-management',
-        icon: 'file',
-        shortcut: ['m', 'm']
-      },
+      // {
+      //   title: 'Material Management',
+      //   url: '/dashboard/material-management',
+      //   icon: 'file',
+      //   shortcut: ['m', 'm']
+      // },
     ]
+  },
+  {
+    title: 'Permission Management',
+    url: '/dashboard/permission-management',
+    icon: 'permission',
+    isActive: false,
+    shortcut: ['d', 'd'],
+    items: []
   },
 ];

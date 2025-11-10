@@ -15,197 +15,164 @@ import {
   FormFieldConfig,
   ReusableFormSheet
 } from '@/components/drawer/add-fields-drawer';
-import { CloudUpload, CopyPlus, Download } from 'lucide-react';
+import { CloudUpload, CopyPlus, Download, User, Camera } from 'lucide-react';
 
 const statusFilter = [
   { label: 'Active', value: 'true' },
   { label: 'Inactive', value: 'false' }
 ];
 
-const userSchema = z.object({
+const customerSchema = z.object({
   name: z.string().min(1, 'Name is required.'),
-  email: z.email({ error: 'Please enter a valid email address.' }),
-  phone: z.string().optional(),
-  roleId: z.string().min(1, 'Role is required.'),
-  isActive: z.string().min(1, 'Status is required.')
+  mobile: z.string().min(10, 'Mobile number must be at least 10 digits.'),
+  email: z.string().email('Please enter a valid email address.').optional().or(z.literal('')),
+  photo: z.any().optional()
 });
 
-type UserFormData = z.infer<typeof userSchema>;
+type CustomerFormData = z.infer<typeof customerSchema>;
 
-const newUserInitialValues: UserFormData = {
+const newCustomerInitialValues: CustomerFormData = {
   name: '',
+  mobile: '',
   email: '',
-  phone: '',
-  roleId: '',
-  isActive: 'true'
+  photo: null
 };
 
-// Static data with 15 records
-const staticUsers = [
+// Static data with 15 customer records
+const staticCustomers = [
   {
     id: 1,
     name: 'John Smith',
     email: 'john.smith@example.com',
-    phone: '123-456-7890',
-    roleId: '1',
-    roleName: 'Admin',
+    mobile: '123-456-7890',
+    photo: null,
     isActive: true
   },
   {
     id: 2,
     name: 'Sarah Johnson',
     email: 'sarah.j@example.com',
-    phone: '123-456-7891',
-    roleId: '2',
-    roleName: 'Manager',
+    mobile: '123-456-7891',
+    photo: null,
     isActive: true
   },
   {
     id: 3,
     name: 'Michael Brown',
     email: 'michael.b@example.com',
-    phone: '123-456-7892',
-    roleId: '2',
-    roleName: 'Manager',
+    mobile: '123-456-7892',
+    photo: null,
     isActive: false
   },
   {
     id: 4,
     name: 'Emily Davis',
     email: 'emily.d@example.com',
-    phone: '123-456-7893',
-    roleId: '3',
-    roleName: 'User',
+    mobile: '123-456-7893',
+    photo: null,
     isActive: true
   },
   {
     id: 5,
     name: 'David Wilson',
     email: 'david.w@example.com',
-    phone: '123-456-7894',
-    roleId: '1',
-    roleName: 'Admin',
+    mobile: '123-456-7894',
+    photo: null,
     isActive: true
   },
   {
     id: 6,
     name: 'Jennifer Lee',
     email: 'jennifer.l@example.com',
-    phone: '123-456-7895',
-    roleId: '3',
-    roleName: 'User',
+    mobile: '123-456-7895',
+    photo: null,
     isActive: false
   },
   {
     id: 7,
     name: 'Robert Taylor',
     email: 'robert.t@example.com',
-    phone: '123-456-7896',
-    roleId: '2',
-    roleName: 'Manager',
+    mobile: '123-456-7896',
+    photo: null,
     isActive: true
   },
   {
     id: 8,
     name: 'Amanda Clark',
     email: 'amanda.c@example.com',
-    phone: '123-456-7897',
-    roleId: '3',
-    roleName: 'User',
+    mobile: '123-456-7897',
+    photo: null,
     isActive: true
   },
   {
     id: 9,
     name: 'Christopher Martin',
     email: 'chris.m@example.com',
-    phone: '123-456-7898',
-    roleId: '1',
-    roleName: 'Admin',
+    mobile: '123-456-7898',
+    photo: null,
     isActive: false
   },
   {
     id: 10,
     name: 'Jessica White',
     email: 'jessica.w@example.com',
-    phone: '123-456-7899',
-    roleId: '2',
-    roleName: 'Manager',
+    mobile: '123-456-7899',
+    photo: null,
     isActive: true
   },
   {
     id: 11,
     name: 'Matthew Anderson',
     email: 'matt.a@example.com',
-    phone: '123-456-7800',
-    roleId: '3',
-    roleName: 'User',
+    mobile: '123-456-7800',
+    photo: null,
     isActive: true
   },
   {
     id: 12,
     name: 'Elizabeth Thomas',
     email: 'elizabeth.t@example.com',
-    phone: '123-456-7801',
-    roleId: '3',
-    roleName: 'User',
+    mobile: '123-456-7801',
+    photo: null,
     isActive: false
   },
   {
     id: 13,
     name: 'Daniel Harris',
     email: 'daniel.h@example.com',
-    phone: '123-456-7802',
-    roleId: '2',
-    roleName: 'Manager',
+    mobile: '123-456-7802',
+    photo: null,
     isActive: true
   },
   {
     id: 14,
     name: 'Michelle Walker',
     email: 'michelle.w@example.com',
-    phone: '123-456-7803',
-    roleId: '1',
-    roleName: 'Admin',
+    mobile: '123-456-7803',
+    photo: null,
     isActive: true
   },
   {
     id: 15,
     name: 'Kevin King',
     email: 'kevin.k@example.com',
-    phone: '123-456-7804',
-    roleId: '3',
-    roleName: 'User',
+    mobile: '123-456-7804',
+    photo: null,
     isActive: true
   }
 ];
 
-const staticRoles = [
-  { roleId: 1, name: 'Admin' },
-  { roleId: 2, name: 'Manager' },
-  { roleId: 3, name: 'Head 1' },
-  { roleId: 4, name: 'Head 2' },
-  { roleId: 5, name: 'Agent' },
-  { roleId: 6, name: 'Programmer 1' },
-  { roleId: 7, name: 'Programmer 2' },
-  { roleId: 8, name: 'Accountant' },
-  { roleId: 9, name: 'Shop Help 1' },
-  { roleId: 10, name: 'Shop Help 2' },
-  { roleId: 11, name: 'Shop Help 3' },
-  { roleId: 12, name: 'Shop Help 4' }
-];
-
-function UsersManagement() {
-  const [users, setUsers] = useState<any[]>([]);
-  const [roles, setRoles] = useState<any[]>([]);
+function CustomersManagement() {
+  const [customers, setCustomers] = useState<any[]>([]);
   const [totalRecords, setTotalRecords] = useState(10);
   const dataTableRef = useRef<ImprovedDataTableRef>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isDeleteDialogVisible, setIsDeleteDialogVisible] =
-    useState<any>(false);
+  const [isDeleteDialogVisible, setIsDeleteDialogVisible] = useState<any>(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<any | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<any | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
   useEffect(() => {
     fetchData({
@@ -214,7 +181,6 @@ function UsersManagement() {
       sortOrder: 'desc',
       sortBy: 'id'
     });
-    fetchRoles();
   }, []);
 
   const fetchData = async (params?: any) => {
@@ -222,8 +188,8 @@ function UsersManagement() {
     try {
       // Use static data instead of API call
       setTimeout(() => {
-        setUsers(staticUsers);
-        setTotalRecords(staticUsers.length);
+        setCustomers(staticCustomers);
+        setTotalRecords(staticCustomers.length);
         setIsLoading(false);
       }, 500); // Simulate loading delay
     } catch (err: any) {
@@ -233,55 +199,41 @@ function UsersManagement() {
     }
   };
 
-  const fetchRoles = async () => {
-    try {
-      // Use static roles data instead of API call
-      setRoles(staticRoles);
-    } catch (err: any) {
-      console.error('Error fetching roles:', err);
-      toast.error(err.message || 'An error occurred while fetching roles.');
-    }
-  };
-
-  // Generate user form fields with dynamic roles dropdown
-  const getUserFormFields = (): FormFieldConfig[] => [
+  // Generate customer form fields
+  const getCustomerFormFields = (): FormFieldConfig[] => [
     {
       name: 'name',
       label: 'Name',
       type: 'text',
-      placeholder: 'e.g. Abhishek'
+      placeholder: 'e.g. John Smith',
+    },
+    {
+      name: 'mobile',
+      label: 'Mobile Number',
+      type: 'text',
+      placeholder: 'e.g. 123-456-7890',
     },
     {
       name: 'email',
-      label: 'Email',
+      label: 'Email (Optional)',
       type: 'email',
-      placeholder: 'abhishek@example.com'
+      placeholder: 'john@example.com',
     },
     {
-      name: 'phone',
-      label: 'Phone',
-      type: 'text',
-      placeholder: 'e.g. 9503562161'
-    },
-    {
-      name: 'roleId',
-      label: 'Role',
-      type: 'dropdown',
-      placeholder: 'Select role',
-      options: roles.map((role) => ({
-        label: role.name,
-        value: role.roleId.toString()
-      }))
-    },
-    {
-      name: 'isActive',
-      label: 'Status',
-      type: 'dropdown',
-      placeholder: 'Select status',
-      options: [
-        { label: 'Active', value: 'true' },
-        { label: 'Inactive', value: 'false' }
-      ]
+      name: 'photo',
+      label: 'Photo (Optional)',
+      type: 'file',
+      placeholder: 'Upload customer photo',
+      accept: 'image/*',
+      onFileChange: (file: File) => {
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            setPhotoPreview(e.target?.result as string);
+          };
+          reader.readAsDataURL(file);
+        }
+      }
     }
   ];
 
@@ -291,6 +243,26 @@ function UsersManagement() {
       header: '#',
       body: (data: any, options: any) => <span>{options.rowIndex + 1}</span>,
       bodyStyle: { minWidth: 50, maxWidth: 50 }
+    },
+    {
+      key: 'photo',
+      header: 'Photo',
+      body: (data: any) => (
+        <div className="flex justify-center">
+          {data.photo ? (
+            <img 
+              src={data.photo} 
+              alt={data.name}
+              className="w-10 h-10 rounded-full object-cover"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+              <User className="w-5 h-5 text-gray-500" />
+            </div>
+          )}
+        </div>
+      ),
+      bodyStyle: { minWidth: 80, maxWidth: 80 }
     },
     {
       key: 'name',
@@ -303,6 +275,16 @@ function UsersManagement() {
       filterPlaceholder: 'Name'
     },
     {
+      key: 'mobile',
+      header: 'Mobile No',
+      field: 'mobile',
+      filter: true,
+      sortable: true,
+      filterType: 'text' as const,
+      bodyStyle: { minWidth: 120, maxWidth: 120 },
+      filterPlaceholder: 'Mobile No'
+    },
+    {
       key: 'email',
       header: 'Email',
       field: 'email',
@@ -310,29 +292,9 @@ function UsersManagement() {
       sortable: true,
       filterType: 'text' as const,
       bodyStyle: { minWidth: 200, maxWidth: 200 },
-      filterPlaceholder: 'Email'
-    },
-    {
-      key: 'phone',
-      header: 'Phone',
-      field: 'phone',
-      filter: true,
-      sortable: true,
-      filterType: 'text' as const,
-      bodyStyle: { minWidth: 120, maxWidth: 120 },
-      filterPlaceholder: 'Phone'
-    },
-    {
-      key: 'role',
-      header: 'Role',
-      field: 'roleName',
-      filter: true,
-      sortable: true,
-      filterType: 'text' as const,
-      bodyStyle: { minWidth: 120, maxWidth: 120 },
-      filterPlaceholder: 'Role',
+      filterPlaceholder: 'Email',
       body: (data: any) => (
-        <span>{data.roleName || data.role?.name || '-'}</span>
+        <span>{data.email || '-'}</span>
       )
     },
     {
@@ -359,47 +321,51 @@ function UsersManagement() {
 
   const onRowSelect = async (rowData: any, action: any) => {
     if (action === ACTIONS.DELETE) {
-      setSelectedUser(rowData);
+      setSelectedCustomer(rowData);
       setIsDeleteDialogVisible(true);
     }
 
     if (action == ACTIONS.EDIT) {
-      setSelectedUser(rowData);
+      setSelectedCustomer(rowData);
+      setPhotoPreview(rowData.photo || null);
       setIsSheetOpen(true);
     }
 
     if (action === ACTIONS.VIEW) {
+      // Handle view action if needed
     }
   };
 
   const handleOpenCreateSheet = () => {
-    setSelectedUser(null);
+    setSelectedCustomer(null);
+    setPhotoPreview(null);
     setIsSheetOpen(true);
   };
 
   const handleCloseDeleteDialog = () => {
     setIsDeleteDialogVisible(false);
-    setSelectedUser(null);
+    setSelectedCustomer(null);
   };
 
   const handleCloseSheet = () => {
     setIsSheetOpen(false);
-    setSelectedUser(null);
+    setSelectedCustomer(null);
+    setPhotoPreview(null);
   };
 
   const handleDeleteConfirm = async () => {
-    if (!selectedUser) return;
+    if (!selectedCustomer) return;
 
     setIsDeleting(true);
     try {
       // Simulate API call with static data
       setTimeout(() => {
-        const updatedUsers = users.filter(
-          (user) => user.id !== selectedUser.id
+        const updatedCustomers = customers.filter(
+          (customer) => customer.id !== selectedCustomer.id
         );
-        setUsers(updatedUsers);
-        setTotalRecords(updatedUsers.length);
-        toast.success(`User "${selectedUser.name}" deleted successfully!`);
+        setCustomers(updatedCustomers);
+        setTotalRecords(updatedCustomers.length);
+        toast.success(`Customer "${selectedCustomer.name}" deleted successfully!`);
         handleCloseDeleteDialog();
         setIsDeleting(false);
       }, 500);
@@ -409,50 +375,47 @@ function UsersManagement() {
     }
   };
 
-  const handleFormSubmit = async (data: z.infer<typeof userSchema>) => {
+  const handleFormSubmit = async (data: z.infer<typeof customerSchema>) => {
     setIsSubmitting(true);
     try {
       // Prepare the data for API
       const submitData = {
         ...data,
-        isActive: data.isActive === 'true'
+        isActive: true // Default to active for new customers
       };
 
       // Simulate API call with static data
       setTimeout(() => {
-        if (selectedUser) {
-          // Update existing user
-          const updatedUsers = users.map((user) =>
-            user.id === selectedUser.id
+        if (selectedCustomer) {
+          // Update existing customer
+          const updatedCustomers = customers.map((customer) =>
+            customer.id === selectedCustomer.id
               ? {
-                  ...user,
+                  ...customer,
                   ...submitData,
-                  id: selectedUser.id,
-                  roleName:
-                    staticRoles.find(
-                      (role) => role.roleId.toString() === data.roleId
-                    )?.name || 'User'
+                  id: selectedCustomer.id,
+                  photo: photoPreview || customer.photo
                 }
-              : user
+              : customer
           );
-          setUsers(updatedUsers);
-          toast.success('User updated successfully!');
+          setCustomers(updatedCustomers);
+          toast.success('Customer updated successfully!');
         } else {
-          // Create new user
-          const newUser = {
-            id: users.length + 1,
+          // Create new customer
+          const newCustomer = {
+            id: customers.length + 1,
             ...submitData,
-            roleName:
-              staticRoles.find((role) => role.roleId.toString() === data.roleId)
-                ?.name || 'User'
+            photo: photoPreview || null,
+            isActive: true
           };
-          setUsers([...users, newUser]);
-          setTotalRecords(users.length + 1);
-          toast.success('User created successfully!');
+          setCustomers([...customers, newCustomer]);
+          setTotalRecords(customers.length + 1);
+          toast.success('Customer created successfully!');
         }
 
         handleCloseSheet();
         setIsSubmitting(false);
+        setPhotoPreview(null);
       }, 500);
     } catch (error: any) {
       toast.error(error.message || 'An unexpected error occurred.');
@@ -468,7 +431,7 @@ function UsersManagement() {
         <div className='mb-2 flex w-full items-center justify-between'>
           <div className='flex flex-col'>
             <h1 className='text-xl font-semibold text-[#525252] dark:text-[#ffffff]'>
-              Users Management
+              Customer Management
             </h1>
           </div>
           <div className='flex gap-3'>
@@ -477,7 +440,7 @@ function UsersManagement() {
                 className='cursor-pointer bg-[#00A345] hover:bg-[#00A345]/10 hover:text-[#00A345]'
                 onClick={handleOpenCreateSheet}
               >
-                <CopyPlus /> New User
+                <CopyPlus /> New Customer
               </Button>
             </div>
             <div className='flex gap-3'>
@@ -497,11 +460,11 @@ function UsersManagement() {
       </div>
       <ImprovedDataTable
         ref={dataTableRef}
-        tableId='user-management'
+        tableId='customer-management'
         page={INITIAL_PAGE}
         limit={INITIAL_LIMIT}
         totalRecords={totalRecords}
-        data={users}
+        data={customers}
         columns={columns}
         loading={isLoading}
         filter={true}
@@ -527,26 +490,39 @@ function UsersManagement() {
       <ReusableFormSheet
         isOpen={isSheetOpen}
         onClose={handleCloseSheet}
-        title={selectedUser ? 'Edit User' : 'Create a New User'}
-        description='Fill in the details below to add a new user to the system.'
-        fields={getUserFormFields()}
-        schema={userSchema}
+        title={selectedCustomer ? 'Edit Customer' : 'Create a New Customer'}
+        description='Fill in the details below to add a new customer to the system.'
+        fields={getCustomerFormFields()}
+        schema={customerSchema}
         onSubmit={handleFormSubmit}
         isSubmitting={isSubmitting}
         initialValues={
-          selectedUser
+          selectedCustomer
             ? {
-                name: selectedUser.name,
-                email: selectedUser.email,
-                phone: selectedUser.phone,
-                roleId: selectedUser.roleId?.toString(),
-                isActive: selectedUser.isActive?.toString()
+                name: selectedCustomer.name,
+                mobile: selectedCustomer.mobile,
+                email: selectedCustomer.email || '',
+                photo: selectedCustomer.photo || null
               }
-            : newUserInitialValues
+            : newCustomerInitialValues
+        }
+        customFormContent={
+          photoPreview && (
+            <div className="mt-4">
+              <p className="text-sm font-medium mb-2">Photo Preview:</p>
+              <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-gray-300">
+                <img 
+                  src={photoPreview} 
+                  alt="Preview" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+          )
         }
       />
     </PageContainer>
   );
 }
 
-export default UsersManagement;
+export default CustomersManagement;
