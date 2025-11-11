@@ -116,13 +116,17 @@ export function ReusableFormSheet<T extends z.ZodObject<any>>({
         return (
           <Select
             onValueChange={(val) => {
-              const numericValue = Number(val);
-              field.onChange(numericValue);
+              // Handle both string and boolean values
+              let finalValue: any = val;
+              if (val === 'true') finalValue = true;
+              if (val === 'false') finalValue = false;
+
+              field.onChange(finalValue);
               if (fieldConfig.onValueChange) {
-                fieldConfig.onValueChange(numericValue, setValue);
+                fieldConfig.onValueChange(finalValue, setValue);
               }
             }}
-            value={field.value ? String(field.value) : undefined}
+            value={String(field.value)} // Convert to string for Select component
             disabled={isDisabled}
           >
             <SelectTrigger className='w-full'>

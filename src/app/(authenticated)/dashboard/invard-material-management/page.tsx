@@ -589,8 +589,8 @@ function MaterialManagement() {
       sortable: true,
       filterType: 'text' as const,
       bodyStyle: {
-        minWidth: '110px',
-        maxWidth: '110px',
+        minWidth: '130px',
+        maxWidth: '130px',
         textAlign: 'right' as const
       },
       filterPlaceholder: 'Length'
@@ -603,8 +603,8 @@ function MaterialManagement() {
       sortable: true,
       filterType: 'text' as const,
       bodyStyle: {
-        minWidth: '110px',
-        maxWidth: '110px',
+      minWidth: '130px',
+        maxWidth: '130px',
         textAlign: 'right' as const
       },
       filterPlaceholder: 'Width'
@@ -617,8 +617,8 @@ function MaterialManagement() {
       sortable: true,
       filterType: 'text' as const,
       bodyStyle: {
-        minWidth: '120px',
-        maxWidth: '120px',
+       minWidth: '150px',
+        maxWidth: '150px',
         textAlign: 'right' as const
       },
       filterPlaceholder: 'Thickness'
@@ -631,8 +631,8 @@ function MaterialManagement() {
       sortable: true,
       filterType: 'text' as const,
       bodyStyle: {
-        minWidth: '90px',
-        maxWidth: '90px',
+       minWidth: '130px',
+        maxWidth: '130px',
         textAlign: 'center' as const
       },
       filterPlaceholder: 'Grade'
@@ -645,8 +645,8 @@ function MaterialManagement() {
       sortable: true,
       filterType: 'text' as const,
       bodyStyle: {
-        minWidth: '100px',
-        maxWidth: '100px',
+      minWidth: '130px',
+        maxWidth: '130px',
         textAlign: 'right' as const
       },
       filterPlaceholder: 'Qty NOS'
@@ -659,8 +659,8 @@ function MaterialManagement() {
       sortable: true,
       filterType: 'text' as const,
       bodyStyle: {
-        minWidth: '100px',
-        maxWidth: '100px',
+     minWidth: '130px',
+        maxWidth: '130px',
         textAlign: 'right' as const
       },
       filterPlaceholder: 'Qty Kg'
@@ -673,8 +673,8 @@ function MaterialManagement() {
       sortable: true,
       filterType: 'text' as const,
       bodyStyle: {
-        minWidth: '120px',
-        maxWidth: '120px',
+       minWidth: '130px',
+        maxWidth: '130px',
         textAlign: 'right' as const
       },
       filterPlaceholder: 'Cutting'
@@ -687,8 +687,8 @@ function MaterialManagement() {
       sortable: true,
       filterType: 'text' as const,
       bodyStyle: {
-        minWidth: '90px',
-        maxWidth: '90px',
+       minWidth: '130px',
+        maxWidth: '130px',
         textAlign: 'right' as const
       },
       filterPlaceholder: 'Piercing'
@@ -701,8 +701,8 @@ function MaterialManagement() {
       sortable: true,
       filterType: 'text' as const,
       bodyStyle: {
-        minWidth: '130px',
-        maxWidth: '130px',
+        minWidth: '150px',
+        maxWidth: '150px',
         textAlign: 'right' as const
       },
       filterPlaceholder: 'Rate'
@@ -715,8 +715,8 @@ function MaterialManagement() {
       sortable: true,
       filterType: 'text' as const,
       bodyStyle: {
-        minWidth: '120px',
-        maxWidth: '120px',
+        minWidth: '150px',
+        maxWidth: '150px',
         textAlign: 'right' as const
       },
       filterPlaceholder: 'Total Cost'
@@ -729,11 +729,18 @@ function MaterialManagement() {
       sortable: true,
       filterType: 'text' as const,
       bodyStyle: {
-        minWidth: '90px',
-        maxWidth: '90px',
+        minWidth: '130px',
+        maxWidth: '130px',
         textAlign: 'center' as const
       },
-      filterPlaceholder: 'Payment'
+      filterPlaceholder: 'Payment',
+      body: (data: MaterialItem) => (
+        <span
+          className={`font-medium ${data.paymentReceived ? 'text-green-600' : 'text-red-600'}`}
+        >
+          {data.paymentReceived ? 'Yes' : 'No'}
+        </span>
+      )
     },
     {
       key: 'scrapTaken',
@@ -743,11 +750,18 @@ function MaterialManagement() {
       sortable: true,
       filterType: 'text' as const,
       bodyStyle: {
-        minWidth: '110px',
-        maxWidth: '110px',
+         minWidth: '130px',
+        maxWidth: '130px',
         textAlign: 'center' as const
       },
-      filterPlaceholder: 'Scrap'
+      filterPlaceholder: 'Scrap',
+      body: (data: MaterialItem) => (
+        <span
+          className={`font-medium ${data.scrapTaken ? 'text-green-600' : 'text-red-600'}`}
+        >
+          {data.scrapTaken ? 'Yes' : 'No'}
+        </span>
+      )
     },
     {
       key: 'scrapQty',
@@ -757,8 +771,8 @@ function MaterialManagement() {
       sortable: true,
       filterType: 'text' as const,
       bodyStyle: {
-        minWidth: '120px',
-        maxWidth: '120px',
+        minWidth: '130px',
+        maxWidth: '130px',
         textAlign: 'right' as const
       },
       filterPlaceholder: 'Scrap Qty'
