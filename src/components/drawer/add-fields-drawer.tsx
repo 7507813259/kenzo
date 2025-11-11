@@ -59,6 +59,7 @@ export type FormFieldConfig = {
   accept?: string;
   fileSize?: number;
   disabled?: boolean | ((watchedFields: Record<string, any>) => boolean);
+  onFileChange?: (file: File) => void;
   multiple?: boolean;
 };
 
@@ -228,50 +229,48 @@ export function ReusableFormSheet<T extends z.ZodObject<any>>({
           <ScrollArea className='flex-1 overflow-hidden'>
             <div className='space-y-6 p-4 py-6'>
               {/* Render custom form content if provided */}
-              {customFormContent ? (
-                customFormContent
-              ) : (
-                // Render regular fields if no custom content
-                fields.map((fieldConfig) => {
-                  if (
-                    fieldConfig.dependency &&
-                    !fieldConfig.dependency.showWhen(
-                      watchedFields[fieldConfig.dependency.fieldName]
-                    )
-                  ) {
-                    return null;
-                  }
+              {customFormContent
+                ? customFormContent
+                : // Render regular fields if no custom content
+                  fields.map((fieldConfig) => {
+                    if (
+                      fieldConfig.dependency &&
+                      !fieldConfig.dependency.showWhen(
+                        watchedFields[fieldConfig.dependency.fieldName]
+                      )
+                    ) {
+                      return null;
+                    }
 
-                  return (
-                    <Controller
-                      key={fieldConfig.name}
-                      name={fieldConfig.name as any}
-                      control={control}
-                      render={({ field, fieldState: { error } }) => (
-                        <div className='grid w-full items-center gap-1.5'>
-                          {fieldConfig.type !== 'checkbox' && (
-                            <Label htmlFor={field.name}>
-                              {fieldConfig.label}
-                            </Label>
-                          )}
-                          {renderField(fieldConfig, field)}
-                          {fieldConfig.type !== 'checkbox' &&
-                            fieldConfig.description && (
-                              <p className='text-muted-foreground text-sm'>
-                                {fieldConfig.description}
+                    return (
+                      <Controller
+                        key={fieldConfig.name}
+                        name={fieldConfig.name as any}
+                        control={control}
+                        render={({ field, fieldState: { error } }) => (
+                          <div className='grid w-full items-center gap-1.5'>
+                            {fieldConfig.type !== 'checkbox' && (
+                              <Label htmlFor={field.name}>
+                                {fieldConfig.label}
+                              </Label>
+                            )}
+                            {renderField(fieldConfig, field)}
+                            {fieldConfig.type !== 'checkbox' &&
+                              fieldConfig.description && (
+                                <p className='text-muted-foreground text-sm'>
+                                  {fieldConfig.description}
+                                </p>
+                              )}
+                            {error && (
+                              <p className='text-destructive text-sm font-medium'>
+                                {error.message}
                               </p>
                             )}
-                          {error && (
-                            <p className='text-destructive text-sm font-medium'>
-                              {error.message}
-                            </p>
-                          )}
-                        </div>
-                      )}
-                    />
-                  );
-                })
-              )}
+                          </div>
+                        )}
+                      />
+                    );
+                  })}
             </div>
           </ScrollArea>
 

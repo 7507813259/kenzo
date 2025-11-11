@@ -13,13 +13,7 @@ import {
   FormFieldConfig,
   ReusableFormSheet
 } from '@/components/drawer/add-fields-drawer';
-import { CloudUpload, CopyPlus, Download, X, FileText, Image } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+import { CloudUpload, CopyPlus, Download } from 'lucide-react';
 
 // Define proper TypeScript interfaces
 interface MaterialItem {
@@ -39,38 +33,14 @@ interface MaterialItem {
   piercing: string;
   cuttingRate: string;
   totalCost: string;
-  paymentReceived: string;
-  scrapTaken: string;
+  paymentReceived: boolean; // Change to lowercase boolean
+  scrapTaken: boolean; // Change to boolean
   scrapQty: string;
   inwardPhotos: string[];
   outwardPhotos: string[];
   fileAttachments: string[];
   programDrgs: string[];
   accountingInvoice: string;
-}
-
-interface FormData {
-  date: string;
-  customer: string;
-  materialDescription: string;
-  length: string;
-  width: string;
-  thickness: string;
-  grade: string;
-  quantityNos: string;
-  quantityKg: string;
-  cuttingLength: string;
-  piercing: string;
-  cuttingRate: string;
-  totalCost: string;
-  inwardPhotos: File[];
-  outwardPhotos: File[];
-  fileAttachments: File[];
-  programDrgs: File[];
-  accountingInvoice?: File;
-  paymentReceived: string;
-  scrapTaken: string;
-  scrapQty: string;
 }
 
 const itemSchema = z.object({
@@ -92,14 +62,14 @@ const itemSchema = z.object({
   fileAttachments: z.array(z.instanceof(File)).optional(),
   programDrgs: z.array(z.instanceof(File)).optional(),
   accountingInvoice: z.instanceof(File).optional(),
-  paymentReceived: z.string().optional(),
-  scrapTaken: z.string().optional(),
+  paymentReceived: z.boolean().optional(), // Add this
+  scrapTaken: z.boolean().optional(), // Add this
   scrapQty: z.string().optional()
 });
 
 type ItemFormData = z.infer<typeof itemSchema>;
 
-const newItemInitialValues: FormData = {
+const newItemInitialValues: ItemFormData = {
   date: new Date().toISOString().split('T')[0],
   customer: '',
   materialDescription: '',
@@ -118,8 +88,8 @@ const newItemInitialValues: FormData = {
   fileAttachments: [],
   programDrgs: [],
   accountingInvoice: undefined,
-  paymentReceived: '',
-  scrapTaken: '',
+  paymentReceived: false, // Change to false
+  scrapTaken: false, // Change to false
   scrapQty: ''
 };
 
@@ -151,27 +121,47 @@ const indianMaterialDescriptions = [
   'HR Coil Steel'
 ];
 
-const grades = ['SS', 'MS', 'SS304', 'SS316', 'MS-C45', 'EN8', 'EN24', 'IS2062'];
+const grades = [
+  'SS',
+  'MS',
+  'SS304',
+  'SS316',
+  'MS-C45',
+  'EN8',
+  'EN24',
+  'IS2062'
+];
 
 // Generate 10 realistic Indian dummy records
 const generateDummyData = (): MaterialItem[] => {
   const dummyData: MaterialItem[] = [];
   const startDate = new Date(2024, 10, 1); // November 1, 2024
-  
+
   for (let i = 1; i <= 10; i++) {
     const currentDate = new Date(startDate);
     currentDate.setDate(startDate.getDate() + i);
-    
+
     const length = (Math.random() * 6000 + 2000).toFixed(0);
     const width = (Math.random() * 2000 + 1000).toFixed(0);
     const thickness = (Math.random() * 40 + 5).toFixed(1);
     const quantityNos = (Math.floor(Math.random() * 50) + 5).toString();
     const cuttingLength = (Math.random() * 500 + 50).toFixed(1);
     const cuttingRate = (Math.random() * 8 + 2).toFixed(2);
-    
+
     // Calculate auto values with Indian context
-    const quantityKg = ((parseFloat(length) * parseFloat(width) * parseFloat(thickness) * parseInt(quantityNos) * 8) / 1000000).toFixed(2);
-    const totalCost = (parseFloat(cuttingLength) * parseFloat(thickness) * parseFloat(cuttingRate)).toFixed(2);
+    const quantityKg = (
+      (parseFloat(length) *
+        parseFloat(width) *
+        parseFloat(thickness) *
+        parseInt(quantityNos) *
+        8) /
+      1000000
+    ).toFixed(2);
+    const totalCost = (
+      parseFloat(cuttingLength) *
+      parseFloat(thickness) *
+      parseFloat(cuttingRate)
+    ).toFixed(2);
 
     // Generate realistic Indian time
     const hours = Math.floor(Math.random() * 8) + 8;
@@ -190,8 +180,14 @@ const generateDummyData = (): MaterialItem[] => {
       srNo: i,
       date: currentDate.toISOString().split('T')[0],
       time: time,
-      customer: indianCustomers[Math.floor(Math.random() * (indianCustomers.length - 1))],
-      materialDescription: indianMaterialDescriptions[Math.floor(Math.random() * indianMaterialDescriptions.length)],
+      customer:
+        indianCustomers[
+          Math.floor(Math.random() * (indianCustomers.length - 1))
+        ],
+      materialDescription:
+        indianMaterialDescriptions[
+          Math.floor(Math.random() * indianMaterialDescriptions.length)
+        ],
       length: length,
       width: width,
       thickness: thickness,
@@ -202,8 +198,8 @@ const generateDummyData = (): MaterialItem[] => {
       piercing: (Math.floor(Math.random() * 15) + 3).toString(),
       cuttingRate: cuttingRate,
       totalCost: totalCost,
-      paymentReceived: Math.random() > 0.3 ? 'Yes' : 'No',
-      scrapTaken: Math.random() > 0.5 ? 'Yes' : 'No',
+      paymentReceived: Math.random() > 0.3, // Change to boolean
+      scrapTaken: Math.random() > 0.5, // Change to boolean
       scrapQty: (Math.random() * 45 + 5).toFixed(1),
       inwardPhotos,
       outwardPhotos,
@@ -220,12 +216,12 @@ function MaterialManagement() {
   const [totalRecords, setTotalRecords] = useState(10);
   const dataTableRef = useRef<ImprovedDataTableRef>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isDeleteDialogVisible, setIsDeleteDialogVisible] = useState<boolean>(false);
+  const [isDeleteDialogVisible, setIsDeleteDialogVisible] =
+    useState<boolean>(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MaterialItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [formData, setFormData] = useState<FormData>(newItemInitialValues);
 
   useEffect(() => {
     fetchData({
@@ -252,77 +248,38 @@ function MaterialManagement() {
     }
   };
 
-  const calculateQuantityKg = (length: string, width: string, thickness: string, quantityNos: string): string => {
+  // Calculation functions
+  const calculateQuantityKg = (
+    length: string,
+    width: string,
+    thickness: string,
+    quantityNos: string
+  ): string => {
     if (!length || !width || !thickness || !quantityNos) return '';
-    const result = (parseFloat(length) * parseFloat(width) * parseFloat(thickness) * parseInt(quantityNos) * 8) / 1000000;
+    const result =
+      (parseFloat(length) *
+        parseFloat(width) *
+        parseFloat(thickness) *
+        parseInt(quantityNos) *
+        8) /
+      1000000;
     return result.toFixed(2);
   };
 
-  const calculateTotalCost = (cuttingLength: string, thickness: string, cuttingRate: string): string => {
+  const calculateTotalCost = (
+    cuttingLength: string,
+    thickness: string,
+    cuttingRate: string
+  ): string => {
     if (!cuttingLength || !thickness || !cuttingRate) return '';
-    const result = parseFloat(cuttingLength) * parseFloat(thickness) * parseFloat(cuttingRate);
+    const result =
+      parseFloat(cuttingLength) *
+      parseFloat(thickness) *
+      parseFloat(cuttingRate);
     return result.toFixed(2);
   };
 
-  const handleFormChange = (field: string, value: any) => {
-    const updatedData = { ...formData, [field]: value };
-    
-    // Auto-calculate Quantity (Kg)
-    if (['length', 'width', 'thickness', 'quantityNos'].includes(field)) {
-      const quantityKg = calculateQuantityKg(
-        field === 'length' ? value : updatedData.length,
-        field === 'width' ? value : updatedData.width,
-        field === 'thickness' ? value : updatedData.thickness,
-        field === 'quantityNos' ? value : updatedData.quantityNos
-      );
-      updatedData.quantityKg = quantityKg;
-    }
-
-    // Auto-calculate Total Cost
-    if (['cuttingLength', 'thickness', 'cuttingRate'].includes(field)) {
-      const totalCost = calculateTotalCost(
-        field === 'cuttingLength' ? value : updatedData.cuttingLength,
-        field === 'thickness' ? value : updatedData.thickness,
-        field === 'cuttingRate' ? value : updatedData.cuttingRate
-      );
-      updatedData.totalCost = totalCost;
-    }
-
-    setFormData(updatedData);
-  };
-
-  const handleFileUpload = (field: keyof FormData, files: FileList | null, isMultiple: boolean = false) => {
-    if (!files) return;
-
-    if (isMultiple) {
-      const newFiles = Array.from(files);
-      setFormData(prev => ({
-        ...prev,
-        [field]: [...(prev[field] as File[] || []), ...newFiles]
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [field]: files[0]
-      }));
-    }
-  };
-
-  const removeFile = (field: keyof FormData, index: number) => {
-    setFormData(prev => {
-      const currentFiles = prev[field] as File[];
-      if (Array.isArray(currentFiles)) {
-        const updatedFiles = currentFiles.filter((_, i) => i !== index);
-        return {
-          ...prev,
-          [field]: updatedFiles
-        };
-      }
-      return prev;
-    });
-  };
-
-  // Generate item form fields using shadcn components
+  // Generate item form fields with auto-calculation logic
   const getItemFormFields = (): FormFieldConfig[] => [
     {
       name: 'date',
@@ -336,7 +293,10 @@ function MaterialManagement() {
       label: 'Customer',
       type: 'select',
       placeholder: 'Select Customer',
-      options: indianCustomers.map(customer => ({ label: customer, value: customer }))
+      options: indianCustomers.map((customer) => ({
+        label: customer,
+        value: customer
+      }))
     },
     {
       name: 'materialDescription',
@@ -348,32 +308,98 @@ function MaterialManagement() {
       name: 'length',
       label: 'Length (mm)',
       type: 'number',
-      placeholder: 'Enter Length in mm'
+      placeholder: 'Enter Length in mm',
+      onValueChange: (
+        value: any,
+        setValue: (name: string, value: any) => void,
+        formValues?: any
+      ) => {
+        const quantityKg = calculateQuantityKg(
+          value,
+          formValues?.width || '',
+          formValues?.thickness || '',
+          formValues?.quantityNos || ''
+        );
+        if (quantityKg) setValue('quantityKg', quantityKg);
+
+        const totalCost = calculateTotalCost(
+          formValues?.cuttingLength || '',
+          formValues?.thickness || '',
+          formValues?.cuttingRate || ''
+        );
+        if (totalCost) setValue('totalCost', totalCost);
+      }
     },
     {
       name: 'width',
       label: 'Width (mm)',
       type: 'number',
-      placeholder: 'Enter Width in mm'
+      placeholder: 'Enter Width in mm',
+      onValueChange: (
+        value: any,
+        setValue: (name: string, value: any) => void,
+        formValues?: any
+      ) => {
+        const quantityKg = calculateQuantityKg(
+          formValues?.length || '',
+          value,
+          formValues?.thickness || '',
+          formValues?.quantityNos || ''
+        );
+        if (quantityKg) setValue('quantityKg', quantityKg);
+      }
     },
     {
       name: 'thickness',
       label: 'Thickness (mm)',
       type: 'number',
-      placeholder: 'Enter Thickness in mm'
+      placeholder: 'Enter Thickness in mm',
+      onValueChange: (
+        value: any,
+        setValue: (name: string, value: any) => void,
+        formValues?: any
+      ) => {
+        const quantityKg = calculateQuantityKg(
+          formValues?.length || '',
+          formValues?.width || '',
+          value,
+          formValues?.quantityNos || ''
+        );
+        if (quantityKg) setValue('quantityKg', quantityKg);
+
+        const totalCost = calculateTotalCost(
+          formValues?.cuttingLength || '',
+          value,
+          formValues?.cuttingRate || ''
+        );
+        if (totalCost) setValue('totalCost', totalCost);
+      }
     },
     {
       name: 'grade',
       label: 'Grade',
       type: 'select',
       placeholder: 'Select Grade',
-      options: grades.map(grade => ({ label: grade, value: grade }))
+      options: grades.map((grade) => ({ label: grade, value: grade }))
     },
     {
       name: 'quantityNos',
       label: 'Quantity (NOS)',
       type: 'number',
-      placeholder: 'Enter Quantity'
+      placeholder: 'Enter Quantity',
+      onValueChange: (
+        value: any,
+        setValue: (name: string, value: any) => void,
+        formValues?: any
+      ) => {
+        const quantityKg = calculateQuantityKg(
+          formValues?.length || '',
+          formValues?.width || '',
+          formValues?.thickness || '',
+          value
+        );
+        if (quantityKg) setValue('quantityKg', quantityKg);
+      }
     },
     {
       name: 'quantityKg',
@@ -386,7 +412,19 @@ function MaterialManagement() {
       name: 'cuttingLength',
       label: 'Cutting Length (MTR)',
       type: 'number',
-      placeholder: 'Enter Cutting Length'
+      placeholder: 'Enter Cutting Length',
+      onValueChange: (
+        value: any,
+        setValue: (name: string, value: any) => void,
+        formValues?: any
+      ) => {
+        const totalCost = calculateTotalCost(
+          value,
+          formValues?.thickness || '',
+          formValues?.cuttingRate || ''
+        );
+        if (totalCost) setValue('totalCost', totalCost);
+      }
     },
     {
       name: 'piercing',
@@ -398,7 +436,19 @@ function MaterialManagement() {
       name: 'cuttingRate',
       label: 'Cutting Rate (₹/mm)',
       type: 'number',
-      placeholder: 'Enter Cutting Rate'
+      placeholder: 'Enter Cutting Rate',
+      onValueChange: (
+        value: any,
+        setValue: (name: string, value: any) => void,
+        formValues?: any
+      ) => {
+        const totalCost = calculateTotalCost(
+          formValues?.cuttingLength || '',
+          formValues?.thickness || '',
+          value
+        );
+        if (totalCost) setValue('totalCost', totalCost);
+      }
     },
     {
       name: 'totalCost',
@@ -410,21 +460,21 @@ function MaterialManagement() {
     {
       name: 'paymentReceived',
       label: 'Payment Received',
-      type: 'select',
+      type: 'dropdown',
       placeholder: 'Select Option',
       options: [
-        { label: 'Yes', value: 'Yes' },
-        { label: 'No', value: 'No' }
+        { label: 'Yes', value: 'true' }, // Use string 'true'
+        { label: 'No', value: 'false' } // Use string 'false'
       ]
     },
     {
       name: 'scrapTaken',
       label: 'Scrap Taken',
-      type: 'select',
+      type: 'dropdown',
       placeholder: 'Select Option',
       options: [
-        { label: 'Yes', value: 'Yes' },
-        { label: 'No', value: 'No' }
+        { label: 'Yes', value: 'true' }, // Use string 'true'
+        { label: 'No', value: 'false' } // Use string 'false'
       ]
     },
     {
@@ -432,6 +482,45 @@ function MaterialManagement() {
       label: 'Qty of Scrap approx Kgs',
       type: 'number',
       placeholder: 'Enter Scrap Quantity'
+    },
+    {
+      name: 'inwardPhotos',
+      label: 'Inward Photos',
+      type: 'file',
+      placeholder: 'Upload inward photos',
+      multiple: true,
+      accept: 'image/*,.pdf,.doc,.docx'
+    },
+    {
+      name: 'outwardPhotos',
+      label: 'Outward Photos',
+      type: 'file',
+      placeholder: 'Upload outward photos',
+      multiple: true,
+      accept: 'image/*,.pdf,.doc,.docx'
+    },
+    {
+      name: 'fileAttachments',
+      label: 'File Attachments',
+      type: 'file',
+      placeholder: 'Upload file attachments',
+      multiple: true,
+      accept: '.pdf,.doc,.docx,.xls,.xlsx,.txt'
+    },
+    {
+      name: 'programDrgs',
+      label: 'Program/Drgs',
+      type: 'file',
+      placeholder: 'Upload program/drgs files',
+      multiple: true,
+      accept: '.dwg,.dxf,.nc,.cnc,.pdf,.jpg,.png'
+    },
+    {
+      name: 'accountingInvoice',
+      label: 'Accounting Invoice',
+      type: 'file',
+      placeholder: 'Upload accounting invoice',
+      accept: '.pdf,.jpg,.png,.xls,.xlsx'
     }
   ];
 
@@ -439,8 +528,14 @@ function MaterialManagement() {
     {
       key: 'srNo',
       header: 'Sr No',
-      body: (data: MaterialItem, options: any) => <span>{options.rowIndex + 1}</span>,
-      bodyStyle: { minWidth: '70px', maxWidth: '70px', textAlign: 'center' as const }
+      body: (data: MaterialItem, options: any) => (
+        <span>{options.rowIndex + 1}</span>
+      ),
+      bodyStyle: {
+        minWidth: '70px',
+        maxWidth: '70px',
+        textAlign: 'center' as const
+      }
     },
     {
       key: 'date',
@@ -448,7 +543,7 @@ function MaterialManagement() {
       field: 'date',
       filter: true,
       sortable: true,
-      filterType: 'date' as const,
+      filterType: 'text' as const,
       bodyStyle: { minWidth: '110px', maxWidth: '110px' },
       filterPlaceholder: 'Date'
     },
@@ -459,7 +554,11 @@ function MaterialManagement() {
       filter: true,
       sortable: true,
       filterType: 'text' as const,
-      bodyStyle: { minWidth: '90px', maxWidth: '90px', textAlign: 'center' as const },
+      bodyStyle: {
+        minWidth: '90px',
+        maxWidth: '90px',
+        textAlign: 'center' as const
+      },
       filterPlaceholder: 'Time'
     },
     {
@@ -489,7 +588,11 @@ function MaterialManagement() {
       filter: true,
       sortable: true,
       filterType: 'text' as const,
-      bodyStyle: { minWidth: '110px', maxWidth: '110px', textAlign: 'right' as const },
+      bodyStyle: {
+        minWidth: '110px',
+        maxWidth: '110px',
+        textAlign: 'right' as const
+      },
       filterPlaceholder: 'Length'
     },
     {
@@ -499,7 +602,11 @@ function MaterialManagement() {
       filter: true,
       sortable: true,
       filterType: 'text' as const,
-      bodyStyle: { minWidth: '110px', maxWidth: '110px', textAlign: 'right' as const },
+      bodyStyle: {
+        minWidth: '110px',
+        maxWidth: '110px',
+        textAlign: 'right' as const
+      },
       filterPlaceholder: 'Width'
     },
     {
@@ -509,7 +616,11 @@ function MaterialManagement() {
       filter: true,
       sortable: true,
       filterType: 'text' as const,
-      bodyStyle: { minWidth: '120px', maxWidth: '120px', textAlign: 'right' as const },
+      bodyStyle: {
+        minWidth: '120px',
+        maxWidth: '120px',
+        textAlign: 'right' as const
+      },
       filterPlaceholder: 'Thickness'
     },
     {
@@ -519,7 +630,11 @@ function MaterialManagement() {
       filter: true,
       sortable: true,
       filterType: 'text' as const,
-      bodyStyle: { minWidth: '90px', maxWidth: '90px', textAlign: 'center' as const },
+      bodyStyle: {
+        minWidth: '90px',
+        maxWidth: '90px',
+        textAlign: 'center' as const
+      },
       filterPlaceholder: 'Grade'
     },
     {
@@ -529,7 +644,11 @@ function MaterialManagement() {
       filter: true,
       sortable: true,
       filterType: 'text' as const,
-      bodyStyle: { minWidth: '100px', maxWidth: '100px', textAlign: 'right' as const },
+      bodyStyle: {
+        minWidth: '100px',
+        maxWidth: '100px',
+        textAlign: 'right' as const
+      },
       filterPlaceholder: 'Qty NOS'
     },
     {
@@ -539,7 +658,11 @@ function MaterialManagement() {
       filter: true,
       sortable: true,
       filterType: 'text' as const,
-      bodyStyle: { minWidth: '100px', maxWidth: '100px', textAlign: 'right' as const },
+      bodyStyle: {
+        minWidth: '100px',
+        maxWidth: '100px',
+        textAlign: 'right' as const
+      },
       filterPlaceholder: 'Qty Kg'
     },
     {
@@ -549,7 +672,11 @@ function MaterialManagement() {
       filter: true,
       sortable: true,
       filterType: 'text' as const,
-      bodyStyle: { minWidth: '120px', maxWidth: '120px', textAlign: 'right' as const },
+      bodyStyle: {
+        minWidth: '120px',
+        maxWidth: '120px',
+        textAlign: 'right' as const
+      },
       filterPlaceholder: 'Cutting'
     },
     {
@@ -559,7 +686,11 @@ function MaterialManagement() {
       filter: true,
       sortable: true,
       filterType: 'text' as const,
-      bodyStyle: { minWidth: '90px', maxWidth: '90px', textAlign: 'right' as const },
+      bodyStyle: {
+        minWidth: '90px',
+        maxWidth: '90px',
+        textAlign: 'right' as const
+      },
       filterPlaceholder: 'Piercing'
     },
     {
@@ -569,7 +700,11 @@ function MaterialManagement() {
       filter: true,
       sortable: true,
       filterType: 'text' as const,
-      bodyStyle: { minWidth: '130px', maxWidth: '130px', textAlign: 'right' as const },
+      bodyStyle: {
+        minWidth: '130px',
+        maxWidth: '130px',
+        textAlign: 'right' as const
+      },
       filterPlaceholder: 'Rate'
     },
     {
@@ -579,7 +714,11 @@ function MaterialManagement() {
       filter: true,
       sortable: true,
       filterType: 'text' as const,
-      bodyStyle: { minWidth: '120px', maxWidth: '120px', textAlign: 'right' as const },
+      bodyStyle: {
+        minWidth: '120px',
+        maxWidth: '120px',
+        textAlign: 'right' as const
+      },
       filterPlaceholder: 'Total Cost'
     },
     {
@@ -589,7 +728,11 @@ function MaterialManagement() {
       filter: true,
       sortable: true,
       filterType: 'text' as const,
-      bodyStyle: { minWidth: '90px', maxWidth: '90px', textAlign: 'center' as const },
+      bodyStyle: {
+        minWidth: '90px',
+        maxWidth: '90px',
+        textAlign: 'center' as const
+      },
       filterPlaceholder: 'Payment'
     },
     {
@@ -599,7 +742,11 @@ function MaterialManagement() {
       filter: true,
       sortable: true,
       filterType: 'text' as const,
-      bodyStyle: { minWidth: '110px', maxWidth: '110px', textAlign: 'center' as const },
+      bodyStyle: {
+        minWidth: '110px',
+        maxWidth: '110px',
+        textAlign: 'center' as const
+      },
       filterPlaceholder: 'Scrap'
     },
     {
@@ -609,7 +756,11 @@ function MaterialManagement() {
       filter: true,
       sortable: true,
       filterType: 'text' as const,
-      bodyStyle: { minWidth: '120px', maxWidth: '120px', textAlign: 'right' as const },
+      bodyStyle: {
+        minWidth: '120px',
+        maxWidth: '120px',
+        textAlign: 'right' as const
+      },
       filterPlaceholder: 'Scrap Qty'
     }
   ];
@@ -622,29 +773,6 @@ function MaterialManagement() {
 
     if (action === ACTIONS.EDIT) {
       setSelectedItem(rowData);
-      setFormData({
-        date: rowData.date,
-        customer: rowData.customer,
-        materialDescription: rowData.materialDescription,
-        length: rowData.length,
-        width: rowData.width,
-        thickness: rowData.thickness,
-        grade: rowData.grade,
-        quantityNos: rowData.quantityNos,
-        quantityKg: rowData.quantityKg,
-        cuttingLength: rowData.cuttingLength,
-        piercing: rowData.piercing,
-        cuttingRate: rowData.cuttingRate,
-        totalCost: rowData.totalCost,
-        inwardPhotos: [],
-        outwardPhotos: [],
-        fileAttachments: [],
-        programDrgs: [],
-        accountingInvoice: undefined,
-        paymentReceived: rowData.paymentReceived,
-        scrapTaken: rowData.scrapTaken,
-        scrapQty: rowData.scrapQty
-      });
       setIsSheetOpen(true);
     }
 
@@ -655,10 +783,6 @@ function MaterialManagement() {
 
   const handleOpenCreateSheet = () => {
     setSelectedItem(null);
-    setFormData({
-      ...newItemInitialValues,
-      date: new Date().toISOString().split('T')[0]
-    });
     setIsSheetOpen(true);
   };
 
@@ -670,7 +794,6 @@ function MaterialManagement() {
   const handleCloseSheet = () => {
     setIsSheetOpen(false);
     setSelectedItem(null);
-    setFormData(newItemInitialValues);
   };
 
   const handleDeleteConfirm = async () => {
@@ -684,7 +807,9 @@ function MaterialManagement() {
         );
         setItems(updatedItems);
         setTotalRecords(updatedItems.length);
-        toast.success(`Item "${selectedItem.materialDescription}" deleted successfully!`);
+        toast.success(
+          `Item "${selectedItem.materialDescription}" deleted successfully!`
+        );
         handleCloseDeleteDialog();
         setIsDeleting(false);
       }, 500);
@@ -698,10 +823,10 @@ function MaterialManagement() {
     setIsSubmitting(true);
     try {
       setTimeout(() => {
-        const currentTime = new Date().toLocaleTimeString('en-US', { 
-          hour: '2-digit', 
+        const currentTime = new Date().toLocaleTimeString('en-US', {
+          hour: '2-digit',
           minute: '2-digit',
-          hour12: false 
+          hour12: false
         });
 
         if (selectedItem) {
@@ -723,10 +848,13 @@ function MaterialManagement() {
             id: `MAT-${(2024000 + items.length + 1).toString()}`,
             srNo: items.length + 1,
             time: currentTime,
-            inwardPhotos: data.inwardPhotos?.map(f => f.name) || [],
-            outwardPhotos: data.outwardPhotos?.map(f => f.name) || [],
-            fileAttachments: data.fileAttachments?.map(f => f.name) || [],
-            programDrgs: data.programDrgs?.map(f => f.name) || [],
+            paymentReceived: data.paymentReceived || false,
+            scrapTaken: data.scrapTaken || false,
+            scrapQty: data.scrapQty || '',
+            inwardPhotos: data.inwardPhotos?.map((f) => f.name) || [],
+            outwardPhotos: data.outwardPhotos?.map((f) => f.name) || [],
+            fileAttachments: data.fileAttachments?.map((f) => f.name) || [],
+            programDrgs: data.programDrgs?.map((f) => f.name) || [],
             accountingInvoice: data.accountingInvoice?.name || ''
           } as MaterialItem;
           setItems([...items, newItem]);
@@ -743,472 +871,7 @@ function MaterialManagement() {
     }
   };
 
-  // Custom form component with shadcn components
-  const CustomFormContent = () => (
-    <div className="space-y-6">
-      {/* Material Details Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
-            Material Details
-          </CardTitle>
-          <CardDescription>Enter the basic material information</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="date">Date</Label>
-              <Input
-                id="date"
-                type="date"
-                value={formData.date}
-                onChange={(e) => handleFormChange('date', e.target.value)}
-                disabled={!selectedItem}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="customer">Customer</Label>
-              <Select
-                value={formData.customer}
-                onValueChange={(value) => handleFormChange('customer', value)}
-              >
-                <SelectTrigger className='w-full'>
-                  <SelectValue placeholder="Select Customer" />
-                </SelectTrigger>
-                <SelectContent className='w-full'>
-                  {indianCustomers.map((customer) => (
-                    <SelectItem key={customer} value={customer}>
-                      {customer}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2 col-span-2">
-              <Label htmlFor="materialDescription">Material Description</Label>
-              <Input
-                id="materialDescription"
-                value={formData.materialDescription}
-                onChange={(e) => handleFormChange('materialDescription', e.target.value)}
-                placeholder="Enter material description"
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Dimensions Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Dimensions & Specifications</CardTitle>
-          <CardDescription>Enter material dimensions and grade</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="length">Length (mm)</Label>
-              <Input
-                id="length"
-                type="number"
-                value={formData.length}
-                onChange={(e) => handleFormChange('length', e.target.value)}
-                placeholder="Enter length"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="width">Width (mm)</Label>
-              <Input
-                id="width"
-                type="number"
-                value={formData.width}
-                onChange={(e) => handleFormChange('width', e.target.value)}
-                placeholder="Enter width"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="thickness">Thickness (mm)</Label>
-              <Input
-                id="thickness"
-                type="number"
-                value={formData.thickness}
-                onChange={(e) => handleFormChange('thickness', e.target.value)}
-                placeholder="Enter thickness"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="grade">Grade</Label>
-              <Select
-                value={formData.grade}
-                onValueChange={(value) => handleFormChange('grade', value)}
-              >
-                <SelectTrigger className='w-full'>
-                  <SelectValue placeholder="Select Grade" />
-                </SelectTrigger>
-                <SelectContent className='w-full'>
-                  {grades.map((grade) => (
-                    <SelectItem key={grade} value={grade}>
-                      {grade}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Quantity & Calculations Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Quantity & Calculations</CardTitle>
-          <CardDescription>Quantity details and auto-calculations</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="quantityNos">Quantity (NOS)</Label>
-              <Input
-                id="quantityNos"
-                type="number"
-                value={formData.quantityNos}
-                onChange={(e) => handleFormChange('quantityNos', e.target.value)}
-                placeholder="Enter quantity"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="quantityKg">Quantity (Kg)</Label>
-              <Input
-                id="quantityKg"
-                type="number"
-                value={formData.quantityKg}
-                disabled
-                className="bg-muted"
-                placeholder="Auto-calculated"
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Cutting Details Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Cutting Details</CardTitle>
-          <CardDescription>Cutting specifications and costs</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="cuttingLength">Cutting Length (MTR)</Label>
-              <Input
-                id="cuttingLength"
-                type="number"
-                value={formData.cuttingLength}
-                onChange={(e) => handleFormChange('cuttingLength', e.target.value)}
-                placeholder="Enter cutting length"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="piercing">Piercing</Label>
-              <Input
-                id="piercing"
-                type="number"
-                value={formData.piercing}
-                onChange={(e) => handleFormChange('piercing', e.target.value)}
-                placeholder="Enter piercing count"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="cuttingRate">Cutting Rate (₹/mm)</Label>
-              <Input
-                id="cuttingRate"
-                type="number"
-                value={formData.cuttingRate}
-                onChange={(e) => handleFormChange('cuttingRate', e.target.value)}
-                placeholder="Enter cutting rate"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="totalCost">Total Cost (₹)</Label>
-              <Input
-                id="totalCost"
-                type="number"
-                value={formData.totalCost}
-                disabled
-                className="bg-muted"
-                placeholder="Auto-calculated"
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Additional Details Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Additional Details</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="paymentReceived">Payment Received</Label>
-              <Select
-                value={formData.paymentReceived}
-                onValueChange={(value) => handleFormChange('paymentReceived', value)}
-              >
-                <SelectTrigger className='w-full'>
-                  <SelectValue placeholder="Select option" />
-                </SelectTrigger>
-                <SelectContent className='w-full'> 
-                  <SelectItem value="Yes">Yes</SelectItem>
-                  <SelectItem value="No">No</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="scrapTaken">Scrap Taken</Label>
-              <Select
-                value={formData.scrapTaken}
-                onValueChange={(value) => handleFormChange('scrapTaken', value)}
-              >
-                <SelectTrigger className='w-full'>
-                  <SelectValue placeholder="Select option" />
-                </SelectTrigger>
-                <SelectContent className='w-full'>
-                  <SelectItem value="Yes">Yes</SelectItem>
-                  <SelectItem value="No">No</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="scrapQty">Scrap Qty (Kg)</Label>
-              <Input
-                id="scrapQty"
-                type="number"
-                value={formData.scrapQty}
-                onChange={(e) => handleFormChange('scrapQty', e.target.value)}
-                placeholder="Enter scrap quantity"
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* File Uploads Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <CloudUpload className="h-5 w-5" />
-            File Uploads
-          </CardTitle>
-          <CardDescription>Upload required documents and photos</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Inward Photos */}
-          <div className="space-y-3">
-            <Label className="flex items-center gap-2">
-              <Image className="h-4 w-4 text-blue-600" />
-              Inward Photos (Multiple)
-            </Label>
-            <div className="flex items-center gap-4">
-              <Input
-                type="file"
-                multiple
-                accept="image/*,.pdf,.doc,.docx"
-                onChange={(e) => handleFileUpload('inwardPhotos', e.target.files, true)}
-                className="flex-1"
-              />
-            </div>
-            <div className="space-y-2">
-              {formData.inwardPhotos.map((file, index) => (
-                <div key={index} className="flex items-center justify-between bg-blue-50 p-3 rounded-lg border">
-                  <div className="flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-blue-600" />
-                    <span className="text-sm font-medium">{file.name}</span>
-                    <Badge variant="secondary" className="text-xs">
-                      {(file.size / 1024).toFixed(1)} KB
-                    </Badge>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeFile('inwardPhotos', index)}
-                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <Separator />
-
-          {/* Outward Photos */}
-          <div className="space-y-3">
-            <Label className="flex items-center gap-2">
-              <Image className="h-4 w-4 text-green-600" />
-              Outward Photos (Multiple)
-            </Label>
-            <div className="flex items-center gap-4">
-              <Input
-                type="file"
-                multiple
-                accept="image/*,.pdf,.doc,.docx"
-                onChange={(e) => handleFileUpload('outwardPhotos', e.target.files, true)}
-                className="flex-1"
-              />
-            </div>
-            <div className="space-y-2">
-              {formData.outwardPhotos.map((file, index) => (
-                <div key={index} className="flex items-center justify-between bg-green-50 p-3 rounded-lg border">
-                  <div className="flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-green-600" />
-                    <span className="text-sm font-medium">{file.name}</span>
-                    <Badge variant="secondary" className="text-xs">
-                      {(file.size / 1024).toFixed(1)} KB
-                    </Badge>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeFile('outwardPhotos', index)}
-                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <Separator />
-
-          {/* File Attachments */}
-          <div className="space-y-3">
-            <Label className="flex items-center gap-2">
-              <FileText className="h-4 w-4 text-purple-600" />
-              File Attachments (Multiple)
-            </Label>
-            <div className="flex items-center gap-4">
-              <Input
-                type="file"
-                multiple
-                accept=".pdf,.doc,.docx,.xls,.xlsx,.txt"
-                onChange={(e) => handleFileUpload('fileAttachments', e.target.files, true)}
-                className="flex-1"
-              />
-            </div>
-            <div className="space-y-2">
-              {formData.fileAttachments.map((file, index) => (
-                <div key={index} className="flex items-center justify-between bg-purple-50 p-3 rounded-lg border">
-                  <div className="flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-purple-600" />
-                    <span className="text-sm font-medium">{file.name}</span>
-                    <Badge variant="secondary" className="text-xs">
-                      {(file.size / 1024).toFixed(1)} KB
-                    </Badge>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeFile('fileAttachments', index)}
-                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <Separator />
-
-          {/* Program/Drgs */}
-          <div className="space-y-3">
-            <Label className="flex items-center gap-2">
-              <FileText className="h-4 w-4 text-orange-600" />
-              Program/Drgs (Multiple)
-            </Label>
-            <div className="flex items-center gap-4">
-              <Input
-                type="file"
-                multiple
-                accept=".dwg,.dxf,.nc,.cnc,.pdf,.jpg,.png"
-                onChange={(e) => handleFileUpload('programDrgs', e.target.files, true)}
-                className="flex-1"
-              />
-            </div>
-            <div className="space-y-2">
-              {formData.programDrgs.map((file, index) => (
-                <div key={index} className="flex items-center justify-between bg-orange-50 p-3 rounded-lg border">
-                  <div className="flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-orange-600" />
-                    <span className="text-sm font-medium">{file.name}</span>
-                    <Badge variant="secondary" className="text-xs">
-                      {(file.size / 1024).toFixed(1)} KB
-                    </Badge>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeFile('programDrgs', index)}
-                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <Separator />
-
-          {/* Accounting Invoice */}
-          <div className="space-y-3">
-            <Label className="flex items-center gap-2">
-              <FileText className="h-4 w-4 text-red-600" />
-              Accounting Invoice (Single)
-            </Label>
-            <div className="flex items-center gap-4">
-              <Input
-                type="file"
-                accept=".pdf,.jpg,.png,.xls,.xlsx"
-                onChange={(e) => handleFileUpload('accountingInvoice', e.target.files, false)}
-                className="flex-1"
-              />
-            </div>
-            {formData.accountingInvoice && (
-              <div className="flex items-center justify-between bg-red-50 p-3 rounded-lg border">
-                <div className="flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-red-600" />
-                  <span className="text-sm font-medium">{formData.accountingInvoice.name}</span>
-                  <Badge variant="secondary" className="text-xs">
-                    {(formData.accountingInvoice.size / 1024).toFixed(1)} KB
-                  </Badge>
-                </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setFormData(prev => ({ ...prev, accountingInvoice: undefined }))}
-                  className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-    </div>
-  );
+  const handleRefresh = () => dataTableRef.current?.refreshData();
 
   return (
     <PageContainer scrollable={false}>
@@ -1220,32 +883,29 @@ function MaterialManagement() {
             </h1>
           </div>
           <div className='flex gap-3'>
-            <Button
-              onClick={handleOpenCreateSheet}
-              className="flex items-center gap-2"
-            >
-              <CopyPlus className="h-4 w-4" />
-              New Item
-            </Button>
-            <Button
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <CloudUpload className="h-4 w-4" />
-              Upload
-            </Button>
-            <Button
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <Download className="h-4 w-4" />
-              Export
-            </Button>
+            <div className='flex gap-3'>
+              <Button
+                className='cursor-pointer bg-[#00A345] hover:bg-[#00A345]/10 hover:text-[#00A345]'
+                onClick={handleOpenCreateSheet}
+              >
+                <CopyPlus /> New Item
+              </Button>
+            </div>
+            <div className='flex gap-3'>
+              <Button className='cursor-pointer bg-[#00A345] hover:bg-[#00A345]/10 hover:text-[#00A345]'>
+                <CloudUpload />
+                Upload
+              </Button>
+            </div>
+            <div className='flex gap-3'>
+              <Button className='cursor-pointer bg-[#00A345] hover:bg-[#00A345]/10 hover:text-[#00A345]'>
+                <Download />
+                Export
+              </Button>
+            </div>
           </div>
         </div>
       </div>
-      
-      {/* Data Table */}
       <ImprovedDataTable
         ref={dataTableRef}
         tableId='item-management'
@@ -1289,6 +949,9 @@ function MaterialManagement() {
             ? {
                 ...selectedItem,
                 date: selectedItem.date,
+                paymentReceived: selectedItem.paymentReceived, // Add this
+                scrapTaken: selectedItem.scrapTaken, // Add this
+                scrapQty: selectedItem.scrapQty, // Add this
                 inwardPhotos: [],
                 outwardPhotos: [],
                 fileAttachments: [],
@@ -1297,7 +960,6 @@ function MaterialManagement() {
               }
             : newItemInitialValues
         }
-        customFormContent={<CustomFormContent />}
       />
     </PageContainer>
   );
